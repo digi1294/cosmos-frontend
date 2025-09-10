@@ -1,0 +1,186 @@
+
+export const generatePDF = async (manualData: any) => {
+  // Create a simple HTML content for PDF generation
+  const htmlContent = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>Business Card Analysis Report</title>
+      <meta charset="utf-8">
+      <style>
+        body { 
+          font-family: Arial, sans-serif; 
+          margin: 40px; 
+          line-height: 1.6;
+          color: #333;
+        }
+        .header { 
+          text-align: center; 
+          margin-bottom: 40px;
+          border-bottom: 2px solid #7c3aed;
+          padding-bottom: 20px;
+        }
+        .logo { 
+          width: 60px; 
+          height: 60px; 
+          margin: 0 auto 20px;
+          display: block;
+        }
+        .company-name {
+          font-size: 24px;
+          font-weight: bold;
+          color: #7c3aed;
+          margin: 10px 0;
+        }
+        .report-title {
+          font-size: 20px;
+          color: #4b5563;
+          margin: 5px 0;
+        }
+        .section { 
+          margin: 30px 0; 
+          padding: 20px;
+          border-left: 4px solid #7c3aed;
+          background: #f8fafc;
+          page-break-inside: avoid;
+        }
+        .section h2 {
+          color: #7c3aed;
+          margin-bottom: 15px;
+        }
+        .score-card {
+          display: inline-block;
+          margin: 10px;
+          padding: 15px;
+          background: white;
+          border-radius: 8px;
+          text-align: center;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+          min-width: 120px;
+        }
+        .score {
+          font-size: 24px;
+          font-weight: bold;
+          color: #7c3aed;
+        }
+        .disclaimer {
+          margin-top: 40px;
+          padding: 20px;
+          background: #fef3c7;
+          border: 1px solid #f59e0b;
+          border-radius: 8px;
+          font-size: 12px;
+          text-align: center;
+          page-break-inside: avoid;
+        }
+        ul {
+          margin: 10px 0;
+          padding-left: 20px;
+        }
+        li {
+          margin: 8px 0;
+        }
+        @media print {
+          body { margin: 20px; }
+          .header { page-break-after: avoid; }
+        }
+      </style>
+    </head>
+    <body>
+      <div class="header">
+        <img src="/lovable-uploads/53420912-774b-4acd-8b64-48c2b13bdf00.png" alt="Logo" class="logo">
+        <div class="company-name">Business Card Analysis</div>
+        <div class="report-title">Professional Analysis Report</div>
+      </div>
+      
+      <div class="section">
+        <h2>Personal Information</h2>
+        <p><strong>Name:</strong> ${manualData?.name || 'N/A'}</p>
+        <p><strong>Company:</strong> ${manualData?.company || 'N/A'}</p>
+        <p><strong>Phone:</strong> ${manualData?.phone || 'N/A'}</p>
+        <p><strong>Email:</strong> ${manualData?.email || 'N/A'}</p>
+        <p><strong>Date of Birth:</strong> ${manualData?.dob || 'N/A'}</p>
+      </div>
+
+      <div class="section">
+        <h2>Overall Scores</h2>
+        <div class="score-card">
+          <div class="score">82%</div>
+          <div>Overall Score</div>
+        </div>
+        <div class="score-card">
+          <div class="score">85%</div>
+          <div>Numerology</div>
+        </div>
+        <div class="score-card">
+          <div class="score">88%</div>
+          <div>Astrology</div>
+        </div>
+        <div class="score-card">
+          <div class="score">75%</div>
+          <div>Design Energy</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>Numerology Analysis</h2>
+        <p><strong>Destiny Number:</strong> 7 - Indicates strong analytical abilities and spiritual insight</p>
+        <p><strong>Phone Vibration:</strong> 8 - Brings material success but may create conflicts</p>
+        <p><strong>Lucky Numbers:</strong> 3, 7, 21</p>
+      </div>
+
+      <div class="section">
+        <h2>Astrology Insights</h2>
+        <p><strong>Zodiac Sign:</strong> Virgo - Practical nature and attention to detail</p>
+        <p><strong>Nakshatra:</strong> Uttara Phalguni - Enhances leadership qualities</p>
+        <p><strong>Lucky Colors:</strong> Blue, Green, White</p>
+        <p><strong>Lucky Days:</strong> Wednesday, Friday</p>
+      </div>
+
+      <div class="section">
+        <h2>Key Recommendations</h2>
+        <ul>
+          <li>Consider changing phone number to include more 7s and 3s</li>
+          <li>Add blue and green color elements to your design</li>
+          <li>Schedule important meetings on Wednesdays and Fridays</li>
+          <li>Redesign card with cosmic elements aligned to your birth chart</li>
+          <li>Include subtle geometric patterns that enhance your numerology</li>
+          <li>Consider premium card material to reflect your earth sign energy</li>
+        </ul>
+      </div>
+
+      <div class="disclaimer">
+        <strong>INTERNAL TOOL DISCLAIMER:</strong> This report is generated by our internal 
+        Business Card Analysis tool for authorized personnel only. The analysis is based on numerological and 
+        astrological principles and should be used for guidance purposes only. Unauthorized distribution is prohibited.
+      </div>
+    </body>
+    </html>
+  `;
+
+  // Create a blob and download
+  const blob = new Blob([htmlContent], { type: 'text/html' });
+  const url = URL.createObjectURL(blob);
+  
+  // Create download link
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `business-card-analysis-${manualData?.name || 'report'}.html`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  
+  // Clean up
+  URL.revokeObjectURL(url);
+  
+  // Also try to open print dialog
+  const printWindow = window.open('', '_blank');
+  if (printWindow) {
+    printWindow.document.write(htmlContent);
+    printWindow.document.close();
+    printWindow.focus();
+    setTimeout(() => {
+      printWindow.print();
+    }, 500);
+  }
+};
